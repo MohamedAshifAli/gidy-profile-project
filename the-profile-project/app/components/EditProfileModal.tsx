@@ -243,14 +243,49 @@ export default function EditProfileModal({
               </div>
 
               <div className="form-group">
-                <label className="form-label">Profile Picture URL</label>
-                <input
-                  className="form-input"
-                  value={formData.profile_picture}
-                  onChange={e => setFormData({ ...formData, profile_picture: e.target.value })}
-                  placeholder="https://example.com/photo.jpg"
-                  id="edit-profile-picture"
-                />
+                <label className="form-label">Profile Picture URL or Upload</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    className="form-input"
+                    value={formData.profile_picture || ''}
+                    onChange={e => setFormData({ ...formData, profile_picture: e.target.value })}
+                    placeholder="https://example.com/photo.jpg"
+                    id="edit-profile-picture"
+                    style={{ flex: 1 }}
+                  />
+                  <div style={{ position: 'relative', overflow: 'hidden' }}>
+                    <button className="btn btn-secondary" style={{ height: '100%', padding: '0 15px' }}>
+                      Upload
+                    </button>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ position: 'absolute', top: 0, left: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => {
+                              const canvas = document.createElement('canvas');
+                              const MAX_WIDTH = 400;
+                              const scaleSize = MAX_WIDTH / img.width;
+                              canvas.width = MAX_WIDTH;
+                              canvas.height = img.height * scaleSize;
+                              const ctx = canvas.getContext('2d');
+                              ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                              setFormData({ ...formData, profile_picture: dataUrl });
+                            };
+                            img.src = event.target?.result as string;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </>
           )}

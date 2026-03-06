@@ -22,6 +22,12 @@ function getInitials(name: string): string {
 }
 
 export default function ProfileHeader({ profile, onEdit }: ProfileHeaderProps) {
+  const [imageError, setImageError] = React.useState(false);
+
+  React.useEffect(() => {
+    setImageError(false);
+  }, [profile.profile_picture]);
+
   return (
     <>
       {/* Cover Section */}
@@ -36,11 +42,12 @@ export default function ProfileHeader({ profile, onEdit }: ProfileHeaderProps) {
             {/* Avatar */}
             <div className="avatar-container">
               <div className="avatar">
-                {profile.profile_picture ? (
+                {profile.profile_picture && !imageError ? (
                   <img
                     src={profile.profile_picture}
                     alt={profile.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={() => setImageError(true)}
                   />
                 ) : (
                   getInitials(profile.name)

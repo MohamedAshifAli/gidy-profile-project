@@ -134,8 +134,13 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ============================
@@ -162,29 +167,20 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 50%, rgba(107, 92, 231, 0.3) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(45, 212, 191, 0.2) 0%, transparent 40%),
     radial-gradient(circle at 60% 80%, rgba(244, 114, 182, 0.15) 0%, transparent 40%);
   z-index: 1;
 }
 
-.cover-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to top, var(--bg-primary), transparent);
-  z-index: 2;
-}
+
 
 .cover-pattern {
   position: absolute;
   inset: 0;
   opacity: 0.08;
-  background-image: 
+  background-image:
     radial-gradient(circle at 1px 1px, white 1px, transparent 1px);
   background-size: 24px 24px;
   z-index: 1;
@@ -195,7 +191,7 @@ body {
    ============================ */
 .profile-header {
   position: relative;
-  margin-top: -80px;
+  margin-top: 0;
   z-index: 10;
   padding: 0 10px;
 }
@@ -209,6 +205,7 @@ body {
 .avatar-container {
   position: relative;
   flex-shrink: 0;
+  margin-top: -80px;
 }
 
 .avatar {
@@ -257,8 +254,15 @@ body {
 }
 
 @keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.8); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 .profile-info {
@@ -756,15 +760,36 @@ body {
 }
 
 @keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.timeline-item:nth-child(1) { animation-delay: 0.1s; }
-.timeline-item:nth-child(2) { animation-delay: 0.2s; }
-.timeline-item:nth-child(3) { animation-delay: 0.3s; }
-.timeline-item:nth-child(4) { animation-delay: 0.4s; }
-.timeline-item:nth-child(5) { animation-delay: 0.5s; }
+.timeline-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.timeline-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.timeline-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.timeline-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.timeline-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
 
 /* ============================
    Theme Toggle
@@ -815,8 +840,13 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .edit-modal {
@@ -831,8 +861,15 @@ body {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .edit-modal-header {
@@ -1017,8 +1054,15 @@ body {
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(100px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ============================
@@ -1043,7 +1087,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
