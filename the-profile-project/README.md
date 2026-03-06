@@ -8,7 +8,7 @@ A high-fidelity, full-stack profile page application inspired by [Gidy.ai](https
 
 ---
 
-## 🚀 Tech Stack
+##  Tech Stack
 
 | Layer        | Technology                          |
 |-------------|--------------------------------------|
@@ -26,7 +26,7 @@ A high-fidelity, full-stack profile page application inspired by [Gidy.ai](https
 
 ---
 
-## 📦 Setup Instructions
+##  Setup Instructions
 
 ### Prerequisites
 
@@ -60,7 +60,7 @@ npm start
 
 ---
 
-## 🏗️ Project Architecture
+##  Project Architecture
 
 ```
 the-profile-project/
@@ -110,9 +110,9 @@ the-profile-project/
 
 ---
 
-## ✨ Innovation Features
+## Innovation Features
 
-### 1. 🏆 Skill Endorsement System
+### 1. Skill Endorsement System
 
 **What:** Visitors can endorse any skill on the profile by clicking the thumbs-up button, entering their name, and submitting. Each endorsement increments the count and is stored in the database. Duplicate endorsements from the same person are prevented.
 
@@ -121,7 +121,7 @@ the-profile-project/
 - **Engagement** — It transforms a static profile into an interactive experience. Visitors become participants, not just viewers.
 - **Data-Driven** — Endorsement counts can inform skill sorting and prominence, creating a self-curating showcase of what a developer is actually known for.
 
-### 2. 🌙 Persistent Dark Mode Toggle
+### 2. Persistent Dark Mode Toggle
 
 **What:** A floating button toggles between light and dark themes. The preference is saved to the database via the `/api/settings` endpoint, persisting across sessions and devices.
 
@@ -132,7 +132,7 @@ the-profile-project/
 
 ---
 
-## 🎨 Design Decisions
+## Design Decisions
 
 - **Color System**: A curated palette anchored by `#4A7CFF` (primary blue), with complementary purple, teal, and pink accents — matching Gidy.ai's clean, professional aesthetic.
 - **Typography**: Inter font at carefully chosen weights (400–800) for visual hierarchy.
