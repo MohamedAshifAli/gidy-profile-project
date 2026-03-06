@@ -11,18 +11,15 @@ export async function GET() {
   try {
     const db = getDb();
 
-    let profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+    let profile = db.prepare('SELECT * FROM profiles WHERE id = 1').get();
     
-    // If no profile exists, create a default empty one
+    // Ensure profile row exists
     if (!profile) {
-      db.prepare(`
-        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `).run('', '', '', '', '', '', '', '');
-      profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+      db.prepare(`INSERT OR IGNORE INTO profiles (id) VALUES (1)`).run();
+      profile = db.prepare('SELECT * FROM profiles WHERE id = 1').get();
     }
 
-    const profileId = (profile as { id: number }).id;
+    const profileId = 1;
 
     const socialLinks = db.prepare('SELECT * FROM social_links WHERE profile_id = ?').all(profileId);
     const skills = db.prepare('SELECT * FROM skills WHERE profile_id = ? ORDER BY endorsement_count DESC').all(profileId);
@@ -55,16 +52,8 @@ export async function PUT(request: NextRequest) {
 
     const { name, title, bio, email, phone, location, profile_picture, cover_image } = body;
 
-    let profile = db.prepare('SELECT id FROM profiles LIMIT 1').get() as { id: number } | undefined;
-    
-    // If no profile exists, create one first
-    if (!profile) {
-      const r = db.prepare(`
-        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `).run('', '', '', '', '', '', '', '');
-      profile = { id: r.lastInsertRowid as number };
-    }
+    // Ensure profile row exists
+    db.prepare(`INSERT OR IGNORE INTO profiles (id) VALUES (1)`).run();
 
     const updates: string[] = [];
     const values: (string | number)[] = [];
@@ -83,11 +72,11 @@ export async function PUT(request: NextRequest) {
     }
 
     updates.push('updated_at = CURRENT_TIMESTAMP');
-    values.push(profile.id);
+    values.push(1); // Target ID 1
 
     db.prepare(`UPDATE profiles SET ${updates.join(', ')} WHERE id = ?`).run(...values);
 
-    const updatedProfile = db.prepare('SELECT * FROM profiles WHERE id = ?').get(profile.id);
+    const updatedProfile = db.prepare('SELECT * FROM profiles WHERE id = 1').get();
     return NextResponse.json({ profile: updatedProfile });
   } catch (error) {
     console.error('Error updating profile:', error);

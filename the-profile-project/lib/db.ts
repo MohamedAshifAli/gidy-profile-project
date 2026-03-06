@@ -4,11 +4,14 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 
-let DB_PATH = path.join(process.cwd(), 'data', 'profile.db');
+// Use an absolute path based on the directory of this file to ensure consistency
+// across different processes (Next.js vs. Express)
+const rootDir = path.resolve(process.cwd());
+let DB_PATH = path.join(rootDir, 'data', 'profile.db');
 
 // In serverless environments like Vercel/Netlify, the filesystem is read-only
 // except for the /tmp directory.
-if (process.env.VERCEL || process.env.NETLIFY || process.env.NODE_ENV === 'production') {
+if (process.env.VERCEL || process.env.NETLIFY || (process.env.NODE_ENV === 'production' && !fs.existsSync(path.join(rootDir, 'data')))) {
   DB_PATH = '/tmp/profile.db';
 }
 
@@ -42,7 +45,7 @@ function initializeDatabase() {
   // Create tables
   database.exec(`
     CREATE TABLE IF NOT EXISTS profiles (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY CHECK (id = 1), -- Ensure only one profile row exists
       name TEXT NOT NULL DEFAULT '',
       title TEXT NOT NULL DEFAULT '',
       bio TEXT NOT NULL DEFAULT '',
@@ -111,11 +114,11 @@ function initializeDatabase() {
 }
 
 function seedDatabase(database: Database.Database) {
-  // Insert a single empty profile so the UI can start editing it
+  // Insert a single empty profile with fixed ID 1
   database.prepare(`
-    INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run('', '', '', '', '', '', '', '');
+    INSERT OR IGNORE INTO profiles (id, name, title, bio, email, phone, location, profile_picture, cover_image)
+    VALUES (1, '', '', '', '', '', '', '', '')
+  `).run();
 
   // Insert default settings
   database.prepare(`INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`).run('theme', 'light');
