@@ -4,13 +4,24 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'profile.db');
+let DB_PATH = path.join(process.cwd(), 'data', 'profile.db');
+
+// In serverless environments like Vercel/Netlify, the filesystem is read-only
+// except for the /tmp directory.
+if (process.env.VERCEL || process.env.NETLIFY || process.env.NODE_ENV === 'production') {
+  DB_PATH = '/tmp/profile.db';
+}
 
 // Ensure the data directory exists
 import fs from 'fs';
 const dataDir = path.dirname(DB_PATH);
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+try {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Could not create data directory, falling back to /tmp', err);
+  DB_PATH = '/tmp/profile.db';
 }
 
 let db: Database.Database;
