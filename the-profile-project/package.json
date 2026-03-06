@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "backend": "tsx backend/index.ts",
+    "setup-db": "tsx scripts/setup-db.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

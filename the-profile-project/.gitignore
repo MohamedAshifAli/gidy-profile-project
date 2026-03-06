@@ -5,6 +5,7 @@
 /.pnp
 .pnp.*
 .yarn/*
+data/profile.db*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -34,6 +35,10 @@ yarn-error.log*
 .env*
 
 # database
+data/*.db
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
 /data/
 
 # vercel
