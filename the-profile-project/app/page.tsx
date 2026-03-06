@@ -27,7 +27,7 @@ function ProfilePageContent() {
   const [theme, setTheme] = useState<string>('light');
   const { showToast } = useToast();
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = '/api';
 
   // ============================
   // Fetch profile data from API
