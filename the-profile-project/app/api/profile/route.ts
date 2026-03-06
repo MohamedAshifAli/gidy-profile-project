@@ -11,9 +11,15 @@ export async function GET() {
   try {
     const db = getDb();
 
-    const profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+    let profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+    
+    // If no profile exists, create a default empty one
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+      db.prepare(`
+        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run('', '', '', '', '', '', '', '');
+      profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
     }
 
     const profileId = (profile as { id: number }).id;
@@ -49,9 +55,15 @@ export async function PUT(request: NextRequest) {
 
     const { name, title, bio, email, phone, location, profile_picture, cover_image } = body;
 
-    const profile = db.prepare('SELECT id FROM profiles LIMIT 1').get() as { id: number } | undefined;
+    let profile = db.prepare('SELECT id FROM profiles LIMIT 1').get() as { id: number } | undefined;
+    
+    // If no profile exists, create one first
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+      const r = db.prepare(`
+        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run('', '', '', '', '', '', '', '');
+      profile = { id: r.lastInsertRowid as number };
     }
 
     const updates: string[] = [];

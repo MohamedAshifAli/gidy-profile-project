@@ -12,8 +12,17 @@ app.use(express.json());
 app.get('/api/profile', (req: Request, res: Response) => {
   try {
     const db = getDb();
-    const profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
-    if (!profile) return res.status(404).json({ error: 'Profile not found' });
+    let profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+    
+    // If no profile exists, create a default empty one
+    if (!profile) {
+      db.prepare(`
+        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run('', '', '', '', '', '', '', '');
+      profile = db.prepare('SELECT * FROM profiles LIMIT 1').get();
+    }
+
     const profileId = (profile as { id: number }).id;
     const socialLinks = db.prepare('SELECT * FROM social_links WHERE profile_id = ?').all(profileId);
     const skills = db.prepare('SELECT * FROM skills WHERE profile_id = ? ORDER BY endorsement_count DESC').all(profileId);
@@ -23,7 +32,10 @@ app.get('/api/profile', (req: Request, res: Response) => {
       return { ...skill, endorsements };
     });
     res.json({ profile, socialLinks, skills: skillsWithEndorsements, workExperience });
-  } catch (error) { res.status(500).json({ error: 'Server error' }); }
+  } catch (error) { 
+    console.error('GET Profile Error:', error);
+    res.status(500).json({ error: 'Server error' }); 
+  }
 });
 
 // Profile PUT
@@ -31,8 +43,18 @@ app.put('/api/profile', (req: Request, res: Response) => {
   try {
     const db = getDb();
     const { name, title, bio, email, phone, location, profile_picture, cover_image } = req.body;
-    const profile = db.prepare('SELECT id FROM profiles LIMIT 1').get() as { id: number } | undefined;
-    if (!profile) return res.status(404).json({ error: 'Not found' });
+    
+    let profile = db.prepare('SELECT id FROM profiles LIMIT 1').get() as { id: number } | undefined;
+    
+    // If no profile exists, create one first
+    if (!profile) {
+      const r = db.prepare(`
+        INSERT INTO profiles (name, title, bio, email, phone, location, profile_picture, cover_image)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run('', '', '', '', '', '', '', '');
+      profile = { id: r.lastInsertRowid as number };
+    }
+
     const updates: string[] = [];
     const values: (string | number)[] = [];
     if (name !== undefined) { updates.push('name = ?'); values.push(name); }
@@ -43,12 +65,17 @@ app.put('/api/profile', (req: Request, res: Response) => {
     if (location !== undefined) { updates.push('location = ?'); values.push(location); }
     if (profile_picture !== undefined) { updates.push('profile_picture = ?'); values.push(profile_picture); }
     if (cover_image !== undefined) { updates.push('cover_image = ?'); values.push(cover_image); }
-    if (!updates.length) return res.status(400).json({ error: 'No fields' });
+    
+    if (!updates.length) return res.status(400).json({ error: 'No fields to update' });
+    
     updates.push('updated_at = CURRENT_TIMESTAMP');
     values.push(profile.id);
     db.prepare(`UPDATE profiles SET ${updates.join(', ')} WHERE id = ?`).run(...values);
     res.json({ profile: db.prepare('SELECT * FROM profiles WHERE id = ?').get(profile.id) });
-  } catch (error) { res.status(500).json({ error: 'Server error' }); }
+  } catch (error) { 
+    console.error('PUT Profile Error:', error);
+    res.status(500).json({ error: 'Server error' }); 
+  }
 });
 
 // Settings GET/PUT
