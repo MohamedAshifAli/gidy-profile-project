@@ -76,7 +76,21 @@ export default function WorkTimeline({ experience }: WorkTimelineProps) {
                   {isCurrent && <span className="current-badge">Current</span>}
                 </div>
                 {exp.description && (
-                  <div className="timeline-description">{exp.description}</div>
+                  <ul className="timeline-description" style={{ margin: '8px 0 0 0', paddingLeft: '20px', listStyleType: 'disc' }}>
+                    {exp.description
+                      .split(/\n+/)
+                      .flatMap((line) => line.trim().split(/\.\s+/))
+                      .filter((text) => text.trim().length > 0)
+                      .map((bullet, i) => {
+                        let text = bullet.trim();
+                        if (!text.endsWith('.')) text += '.';
+                        return (
+                          <li key={i} style={{ marginBottom: '6px' }}>
+                            {text}
+                          </li>
+                        );
+                      })}
+                  </ul>
                 )}
               </div>
             </div>

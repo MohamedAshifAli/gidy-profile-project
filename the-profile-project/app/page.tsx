@@ -27,12 +27,14 @@ function ProfilePageContent() {
   const [theme, setTheme] = useState<string>('light');
   const { showToast } = useToast();
 
+  const API_URL = 'http://localhost:5000/api';
+
   // ============================
   // Fetch profile data from API
   // ============================
   const fetchProfile = useCallback(async () => {
     try {
-      const res = await fetch('/api/profile');
+      const res = await fetch(`${API_URL}/profile?t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch profile');
       const data = await res.json();
       setProfile(data.profile);
@@ -52,7 +54,7 @@ function ProfilePageContent() {
   // ============================
   const fetchTheme = useCallback(async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch(`${API_URL}/settings`);
       if (res.ok) {
         const data = await res.json();
         const savedTheme = data.settings?.theme || 'light';
@@ -78,7 +80,7 @@ function ProfilePageContent() {
     document.documentElement.setAttribute('data-theme', newTheme);
 
     try {
-      await fetch('/api/settings', {
+      await fetch(`${API_URL}/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: 'theme', value: newTheme }),
@@ -92,7 +94,7 @@ function ProfilePageContent() {
   // Profile Update Handlers
   // ============================
   const handleSaveProfile = async (data: Partial<Profile>) => {
-    const res = await fetch('/api/profile', {
+    const res = await fetch(`${API_URL}/profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -102,7 +104,7 @@ function ProfilePageContent() {
   };
 
   const handleAddSkill = async (data: { name: string; category: string; proficiency: number }) => {
-    const res = await fetch('/api/skills', {
+    const res = await fetch(`${API_URL}/skills`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -112,13 +114,13 @@ function ProfilePageContent() {
   };
 
   const handleDeleteSkill = async (id: number) => {
-    const res = await fetch(`/api/skills?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/skills?id=${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to delete skill');
     await fetchProfile();
   };
 
   const handleAddSocialLink = async (data: { platform: string; url: string; icon: string }) => {
-    const res = await fetch('/api/social-links', {
+    const res = await fetch(`${API_URL}/social-links`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -128,13 +130,13 @@ function ProfilePageContent() {
   };
 
   const handleDeleteSocialLink = async (id: number) => {
-    const res = await fetch(`/api/social-links?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/social-links?id=${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to delete social link');
     await fetchProfile();
   };
 
   const handleAddExperience = async (data: any) => {
-    const res = await fetch('/api/experience', {
+    const res = await fetch(`${API_URL}/experience`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -143,8 +145,18 @@ function ProfilePageContent() {
     await fetchProfile();
   };
 
+  const handleUpdateExperience = async (data: any) => {
+    const res = await fetch(`${API_URL}/experience`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to update experience');
+    await fetchProfile();
+  };
+
   const handleDeleteExperience = async (id: number) => {
-    const res = await fetch(`/api/experience?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/experience?id=${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to delete experience');
     await fetchProfile();
   };
@@ -153,7 +165,7 @@ function ProfilePageContent() {
   // Skill Endorsement Handler
   // ============================
   const handleEndorse = async (skillId: number, endorserName: string) => {
-    const res = await fetch('/api/endorsements', {
+    const res = await fetch(`${API_URL}/endorsements`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ skill_id: skillId, endorser_name: endorserName }),
@@ -224,6 +236,7 @@ function ProfilePageContent() {
           onAddSocialLink={handleAddSocialLink}
           onDeleteSocialLink={handleDeleteSocialLink}
           onAddExperience={handleAddExperience}
+          onUpdateExperience={handleUpdateExperience}
           onDeleteExperience={handleDeleteExperience}
         />
       )}

@@ -3,6 +3,7 @@
 // GET /api/settings - Get all settings (theme, etc.)
 // PUT /api/settings - Update a setting
 // ============================
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import getDb from '@/lib/db';
 

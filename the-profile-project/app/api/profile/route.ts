@@ -3,6 +3,7 @@
 // GET /api/profile - Fetch profile with all related data
 // PUT /api/profile - Update profile information
 // ============================
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import getDb from '@/lib/db';
 

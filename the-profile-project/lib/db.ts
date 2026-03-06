@@ -118,12 +118,12 @@ function seedDatabase(database: Database.Database) {
   `);
 
   const result = insertProfile.run(
-    'Sarah Chen',
-    'Senior Full-Stack Developer & UI/UX Enthusiast',
-    'Passionate full-stack developer with 6+ years of experience building scalable web applications. I love crafting beautiful user interfaces and solving complex backend challenges. Currently focused on React, Node.js, and cloud-native architectures. When not coding, you can find me mentoring junior developers or contributing to open-source projects.',
-    'sarah.chen@email.com',
-    '+1 (555) 123-4567',
-    'San Francisco, CA',
+    'Mohamed Ashif Ali',
+    'Python / AI Engineer ',
+    'Passionate developer with 6+ years of experience building scalable web applications. I love crafting beautiful user interfaces and solving complex backend challenges. Currently focused on React, Node.js, and cloud-native architectures. When not coding, you can find me mentoring junior developers or contributing to open-source projects.',
+    'mohameashif180@email.com',
+    '+91 63829 47757',
+    'Velacherry, Chennai, India',
     '',
     ''
   );
@@ -137,9 +137,9 @@ function seedDatabase(database: Database.Database) {
   `);
 
   const socialLinks = [
-    [profileId, 'GitHub', 'https://github.com/sarahchen', 'github'],
-    [profileId, 'LinkedIn', 'https://linkedin.com/in/sarahchen', 'linkedin'],
-    [profileId, 'Twitter', 'https://twitter.com/sarahchen_dev', 'twitter'],
+    [profileId, 'GitHub', 'https://github.com/MohamedAshifAli/gidy-profile-project', 'github'],
+    [profileId, 'LinkedIn', 'https://www.linkedin.com/in/mohamed-ashif-8ba805204/', 'linkedin'],
+    [profileId, 'Twitter', 'https://gidy-profile-project-ashif.vercel.app/', 'Vercel'],
     [profileId, 'Portfolio', 'https://sarahchen.dev', 'globe'],
     [profileId, 'Dribbble', 'https://dribbble.com/sarahchen', 'dribbble'],
   ];

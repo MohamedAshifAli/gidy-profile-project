@@ -39,6 +39,7 @@ interface EditProfileModalProps {
   onAddSocialLink: (data: { platform: string; url: string; icon: string }) => Promise<void>;
   onDeleteSocialLink: (id: number) => Promise<void>;
   onAddExperience: (data: { company: string; role: string; description: string; start_date: string; end_date: string | null; is_current: boolean }) => Promise<void>;
+  onUpdateExperience: (data: { id: number; company?: string; role?: string; description?: string; start_date?: string; end_date?: string | null; is_current?: boolean }) => Promise<void>;
   onDeleteExperience: (id: number) => Promise<void>;
 }
 
@@ -56,10 +57,13 @@ export default function EditProfileModal({
   onAddSocialLink,
   onDeleteSocialLink,
   onAddExperience,
+  onUpdateExperience,
   onDeleteExperience,
 }: EditProfileModalProps) {
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [saving, setSaving] = useState(false);
+  const [editingExperienceId, setEditingExperienceId] = useState<number | null>(null);
+  const [editExperienceText, setEditExperienceText] = useState('');
   const { showToast } = useToast();
 
   // Profile form state
@@ -138,6 +142,16 @@ export default function EditProfileModal({
       showToast('Experience added! 💼');
     } catch {
       showToast('Failed to add experience', 'error');
+    }
+  };
+
+  const handleSaveExperienceDescription = async (id: number) => {
+    try {
+      await onUpdateExperience({ id, description: editExperienceText });
+      setEditingExperienceId(null);
+      showToast('Experience updated! ✏️');
+    } catch {
+      showToast('Failed to update experience', 'error');
     }
   };
 
@@ -426,6 +440,46 @@ export default function EditProfileModal({
                       <TrashIcon size={14} />
                     </button>
                   </div>
+
+                  {editingExperienceId === exp.id ? (
+                    <div style={{ marginTop: '12px' }}>
+                      <textarea
+                        className="form-textarea"
+                        value={editExperienceText}
+                        onChange={(e) => setEditExperienceText(e.target.value)}
+                        style={{ minHeight: '60px', marginBottom: '8px' }}
+                      />
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleSaveExperienceDescription(exp.id)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setEditingExperienceId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px', whiteSpace: 'pre-wrap', maxHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {exp.description || 'No description provided.'}
+                      </div>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => {
+                          setEditingExperienceId(exp.id);
+                          setEditExperienceText(exp.description || '');
+                        }}
+                      >
+                        Edit Description
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
 
