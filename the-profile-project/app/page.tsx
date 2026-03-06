@@ -27,7 +27,11 @@ function ProfilePageContent() {
   const [theme, setTheme] = useState<string>('light');
   const { showToast } = useToast();
 
-  const API_URL = '/api';
+  // Use your deployed URL for Production, and Localhost for Development
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+                 (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+                  ? 'http://localhost:5050/api' 
+                  : '/api');
 
   // ============================
   // Fetch profile data from API

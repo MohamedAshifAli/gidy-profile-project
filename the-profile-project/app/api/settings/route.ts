@@ -1,16 +1,9 @@
-// ============================
-// Settings API Route  
-// GET /api/settings - Get all settings (theme, etc.)
-// PUT /api/settings - Update a setting
-// ============================
-export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import getDb from '@/lib/db';
+import sql from '@/lib/db';
 
 export async function GET() {
   try {
-    const db = getDb();
-    const settings = db.prepare('SELECT * FROM settings').all() as { key: string; value: string }[];
+    const settings = await sql`SELECT * FROM settings`;
 
     const settingsMap: Record<string, string> = {};
     for (const s of settings) {
@@ -26,7 +19,6 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const db = getDb();
     const body = await request.json();
     const { key, value } = body;
 
@@ -34,9 +26,10 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Key and value are required' }, { status: 400 });
     }
 
-    db.prepare(
-      'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?'
-    ).run(key, value, value);
+    await sql`
+      INSERT INTO settings (key, value) VALUES (${key}, ${value}) 
+      ON CONFLICT(key) DO UPDATE SET value = ${value}
+    `;
 
     return NextResponse.json({ success: true, key, value });
   } catch (error) {
