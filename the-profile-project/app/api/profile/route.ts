@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest) {
     `;
 
     const updatedProfiles = await sql`SELECT * FROM profiles WHERE id = 1`;
-    return NextRespossnse.json({ profile: updatedProfiles[0] });
+    return NextResponse.json({ profile: updatedProfiles[0] });
   } catch (error: any) {
     console.error('Error updating profile:', error);
     // Return the specific error message to help debugging
