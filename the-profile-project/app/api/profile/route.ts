@@ -53,7 +53,7 @@ export async function PUT(request: NextRequest) {
     await sql`
       INSERT INTO profiles (id, name, title, bio, email, phone, location, profile_picture, cover_image)
       VALUES (
-        1, 
+        1::integer, 
         ${name || ''}, 
         ${title || ''}, 
         ${bio || ''}, 
@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest) {
     `;
 
     const updatedProfiles = await sql`SELECT * FROM profiles WHERE id = 1`;
-    return NextResponse.json({ profile: updatedProfiles[0] });
+    return NextRespossnse.json({ profile: updatedProfiles[0] });
   } catch (error: any) {
     console.error('Error updating profile:', error);
     // Return the specific error message to help debugging

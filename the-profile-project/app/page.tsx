@@ -67,7 +67,6 @@ function ProfilePageContent() {
       setSocialLinks(DEFAULT_SOCIAL_LINKS);
       setSkills(DEFAULT_SKILLS);
       setExperience(DEFAULT_EXPERIENCE);
-      showToast('Loaded default profile (backend connection failed)', 'success');
     } finally {
       setLoading(false);
     }
