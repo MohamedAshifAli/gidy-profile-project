@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Profile, SocialLink } from '@/lib/types';
+import { DEFAULT_PROFILE, DEFAULT_SOCIAL_LINKS, DEFAULT_SKILLS, DEFAULT_EXPERIENCE } from '@/lib/data';
 import { ToastProvider, useToast } from './components/Toast';
 import ProfileHeader from './components/ProfileHeader';
 import BioSection from './components/BioSection';
@@ -27,7 +28,11 @@ function ProfilePageContent() {
   const [theme, setTheme] = useState<string>('light');
   const { showToast } = useToast();
 
-  const API_URL = '/api';
+  // Use your deployed URL for Production, and Localhost for Development
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+                 (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+                  ? 'http://localhost:5050/api' 
+                  : '/api');
 
   // ============================
   // Fetch profile data from API
@@ -37,17 +42,31 @@ function ProfilePageContent() {
       const res = await fetch(`${API_URL}/profile?t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch profile');
       const data = await res.json();
-      setProfile(data.profile);
-      setSocialLinks(data.socialLinks);
-      setSkills(data.skills);
-      setExperience(data.workExperience);
+      
+      if (data.profile) {
+        setProfile(data.profile);
+        setSocialLinks(data.socialLinks || []);
+        setSkills(data.skills || []);
+        setExperience(data.workExperience || []);
+      } else {
+        // Fallback to default data if profile is missing in backend
+        setProfile(DEFAULT_PROFILE);
+        setSocialLinks(DEFAULT_SOCIAL_LINKS);
+        setSkills(DEFAULT_SKILLS);
+        setExperience(DEFAULT_EXPERIENCE);
+      }
     } catch (err) {
       console.error('Error fetching profile:', err);
-      showToast('Failed to load profile data', 'error');
+      // Even on error, show the default static data instead of an empty screen
+      setProfile(DEFAULT_PROFILE);
+      setSocialLinks(DEFAULT_SOCIAL_LINKS);
+      setSkills(DEFAULT_SKILLS);
+      setExperience(DEFAULT_EXPERIENCE);
+      showToast('Loaded default profile (backend connection failed)', 'success');
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [showToast, API_URL]);
 
   // ============================
   // Fetch theme setting
