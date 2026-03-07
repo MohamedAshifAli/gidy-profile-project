@@ -43,18 +43,23 @@ function ProfilePageContent() {
       if (!res.ok) throw new Error('Failed to fetch profile');
       const data = await res.json();
       
-      if (data.profile) {
-        setProfile(data.profile);
-        setSocialLinks(data.socialLinks || []);
-        setSkills(data.skills || []);
-        setExperience(data.workExperience || []);
-      } else {
-        // Fallback to default data if profile is missing in backend
-        setProfile(DEFAULT_PROFILE);
-        setSocialLinks(DEFAULT_SOCIAL_LINKS);
-        setSkills(DEFAULT_SKILLS);
-        setExperience(DEFAULT_EXPERIENCE);
-      }
+      // Use backend data if it exists, otherwise fallback to defaults
+      const hasBackendProfile = data.profile && (data.profile.name || data.profile.bio);
+      
+      setProfile(hasBackendProfile ? data.profile : DEFAULT_PROFILE);
+      
+      setSocialLinks(data.socialLinks && data.socialLinks.length > 0 
+        ? data.socialLinks 
+        : DEFAULT_SOCIAL_LINKS);
+        
+      setSkills(data.skills && data.skills.length > 0 
+        ? data.skills 
+        : DEFAULT_SKILLS);
+        
+      setExperience(data.workExperience && data.workExperience.length > 0 
+        ? data.workExperience 
+        : DEFAULT_EXPERIENCE);
+
     } catch (err) {
       console.error('Error fetching profile:', err);
       // Even on error, show the default static data instead of an empty screen

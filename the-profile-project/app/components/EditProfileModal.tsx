@@ -93,6 +93,7 @@ export default function EditProfileModal({
     try {
       await onSaveProfile(formData);
       showToast('Profile updated successfully!');
+      onClose(); // Automatically close the modal after saving
     } catch {
       showToast('Failed to update profile', 'error');
     } finally {
