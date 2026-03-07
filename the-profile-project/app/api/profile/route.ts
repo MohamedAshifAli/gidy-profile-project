@@ -48,24 +48,41 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { name, title, bio, email, phone, location, profile_picture, cover_image } = body;
 
-    // Ensure profile row exists
-    await sql`INSERT INTO profiles (id) VALUES (1) ON CONFLICT (id) DO NOTHING`;
-
-    if (name !== undefined) await sql`UPDATE profiles SET name = ${name} WHERE id = 1`;
-    if (title !== undefined) await sql`UPDATE profiles SET title = ${title} WHERE id = 1`;
-    if (bio !== undefined) await sql`UPDATE profiles SET bio = ${bio} WHERE id = 1`;
-    if (email !== undefined) await sql`UPDATE profiles SET email = ${email} WHERE id = 1`;
-    if (phone !== undefined) await sql`UPDATE profiles SET phone = ${phone} WHERE id = 1`;
-    if (location !== undefined) await sql`UPDATE profiles SET location = ${location} WHERE id = 1`;
-    if (profile_picture !== undefined) await sql`UPDATE profiles SET profile_picture = ${profile_picture} WHERE id = 1`;
-    if (cover_image !== undefined) await sql`UPDATE profiles SET cover_image = ${cover_image} WHERE id = 1`;
-
-    await sql`UPDATE profiles SET updated_at = CURRENT_TIMESTAMP WHERE id = 1`;
+    // Use a single UPSERT query to update the profile efficiently
+    // This ensures either a new profile is created or the existing one (id=1) is updated in one atomic step
+    await sql`
+      INSERT INTO profiles (id, name, title, bio, email, phone, location, profile_picture, cover_image)
+      VALUES (
+        1, 
+        ${name || ''}, 
+        ${title || ''}, 
+        ${bio || ''}, 
+        ${email || ''}, 
+        ${phone || ''}, 
+        ${location || ''}, 
+        ${profile_picture || ''}, 
+        ${cover_image || ''}
+      )
+      ON CONFLICT (id) DO UPDATE SET
+        name = COALESCE(EXCLUDED.name, profiles.name),
+        title = COALESCE(EXCLUDED.title, profiles.title),
+        bio = COALESCE(EXCLUDED.bio, profiles.bio),
+        email = COALESCE(EXCLUDED.email, profiles.email),
+        phone = COALESCE(EXCLUDED.phone, profiles.phone),
+        location = COALESCE(EXCLUDED.location, profiles.location),
+        profile_picture = COALESCE(EXCLUDED.profile_picture, profiles.profile_picture),
+        cover_image = COALESCE(EXCLUDED.cover_image, profiles.cover_image),
+        updated_at = CURRENT_TIMESTAMP
+    `;
 
     const updatedProfiles = await sql`SELECT * FROM profiles WHERE id = 1`;
     return NextResponse.json({ profile: updatedProfiles[0] });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Return the specific error message to help debugging
+    return NextResponse.json({ 
+      error: 'Failed to save changes', 
+      details: error.message || 'Unknown database error' 
+    }, { status: 500 });
   }
 }
